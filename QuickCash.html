@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mkopo Wa Haraka - Mkopo wa Haraka Binafsi</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --primary-light: #dbeafe;
+            --gold: #f59e0b;
+            --gold-dark: #d97706;
+            --gold-light: #fef3c7;
+            --success: #10b981;
+            --success-light: #d1fae5;
+            --danger: #ef4444;
+            --danger-light: #fee2e2;
+            --warning: #f59e0b;
+            --warning-light: #fef3c7;
+            --dark: #1e293b;
+            --gray: #64748b;
+            --gray-light: #f1f5f9;
+            --white: #ffffff;
+            --border: #e2e8f0;
+            --shadow: 0 4px 6px rgba(0,0,0,0.07);
+            --shadow-lg: 0 10px 25px rgba(0,0,0,0.1);
+            --shadow-xl: 0 20px 50px rgba(0,0,0,0.15);
+            --radius: 12px;
+            --radius-lg: 16px;
+            --transition: all 0.3s ease;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f8fafc;
+            color: var(--dark);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .top-bar {
+            background: var(--dark);
+            color: white;
+            padding: 8px 0;
+            font-size: 0.85rem;
+            overflow: hidden;
+        }
+
+        .top-bar-inner {
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+            animation: slideLeft 25s linear infinite;
+            white-space: nowrap;
+        }
+
+        .top-bar-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .top-bar-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--gold);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes slideLeft {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        .header {
+            background: var(--white);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+
+        .header-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary), var(--gold));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 900;
+            font-size: 1.2rem;
+        }
+
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--dark);
+            letter-spacing: -0.5px;
+        }
+
+        .logo-text span { color: var(--primary); }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--dark);
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: var(--transition);
+        }
+
+        .nav-links a:hover { color: var(--primary); }
+
+        .btn-apply {
+            background: var(--gold) !important;
+            color: var(--dark) !important;
+            padding: 0.7rem 1.8rem !important;
+            border-radius: 50px;
+            font-weight: 700 !important;
+            transition: var(--transition);
+        }
+
+        .btn-apply:hover {
+            background: var(--gold-dark) !important;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(245,158,11,0.4) !important;
+        }
+
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            cursor: pointer;
+            z-index: 1002;
+        }
+
+        .hamburger span {
+            width: 28px;
+            height: 3px;
+            background: var(--dark);
+            border-radius: 3px;
+            transition: var(--transition);
+        }
+
+        .mobile-menu {
+            position: fixed;
+            top: 0;
+            right: -100%;
+            width: 80%;
+            max-width: 350px;
+            height: 100vh;
+            background: var(--white);
+            z-index: 999;
+            padding: 6rem 2rem 2rem;
+            transition: right 0.4s ease;
+            box-shadow: var(--shadow-xl);
+        }
+
+        .mobile-menu.active { right: 0; }
+
+        .mobile-menu a {
+            display: block;
+            padding: 1rem 0;
+            text-decoration: none;
+            color: var(--dark);
+            font-weight: 500;
+            font-size: 1.1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .mobile-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 998;
+            display: none;
+        }
+
+        .mobile-overlay.active { display: block; }
+
+        .hero {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+
+        .hero-content h1 {
+            font-size: 3.2rem;
+            font-weight: 900;
+            line-height: 1.15;
+            margin-bottom: 1.5rem;
+            letter-spacing: -1px;
+        }
+
+        .hero-content h1 .highlight {
+            color: var(--primary);
+            position: relative;
+        }
+
+        .hero-content h1 .highlight::after {
+            content: '';
+            position: absolute;
+            bottom: 5px;
+            left: 0;
+            width: 100%;
+            height: 12px;
+            background: var(--primary-light);
+            z-index: -1;
+            border-radius: 5px;
+        }
+
+        .hero-content p {
+            font-size: 1.15rem;
+            color: var(--gray);
+            margin-bottom: 2rem;
+        }
+
+        .hero-features {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .hero-feature {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .hero-feature .check {
+            width: 24px;
+            height: 24px;
+            background: var(--success-light);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--success);
+            font-size: 0.8rem;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 0.9rem 2rem;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            border: none;
+            transition: var(--transition);
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 20px rgba(37,99,235,0.4);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        .btn-gold {
+            background: var(--gold);
+            color: var(--dark);
+            font-weight: 700;
+        }
+
+        .btn-gold:hover {
+            background: var(--gold-dark);
+            transform: translateY(-2px);
+        }
+
+        .hero-calc {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            box-shadow: var(--shadow-xl);
+            border: 1px solid var(--border);
+        }
+
+        .hero-calc h3 {
+            font-size: 1.2rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            color: var(--dark);
+        }
+
+        .slider-group {
+            margin-bottom: 1.2rem;
+        }
+
+        .slider-group label {
+            display: flex;
+            justify-content: space-between;
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .slider-group label span {
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        .slider-group input[type="range"] {
+            width: 100%;
+            height: 6px;
+            -webkit-appearance: none;
+            background: var(--gray-light);
+            border-radius: 5px;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .slider-group input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 24px;
+            height: 24px;
+            background: var(--primary);
+            border-radius: 50%;
+            cursor: pointer;
+            border: 3px solid white;
+            box-shadow: var(--shadow);
+        }
+
+        .calc-result {
+            background: var(--primary-light);
+            border-radius: var(--radius);
+            padding: 1.3rem;
+            text-align: center;
+            margin-top: 1rem;
+        }
+
+        .calc-result .monthly {
+            font-size: 2.2rem;
+            font-weight: 900;
+            color: var(--primary);
+        }
+
+        .calc-result .label {
+            color: var(--gray);
+            font-size: 0.85rem;
+        }
+
+        .stats-bar {
+            background: var(--white);
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+            padding: 2rem 0;
+        }
+
+        .stats-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 2rem;
+        }
+
+        .stat-item { text-align: center; }
+
+        .stat-number {
+            font-size: 2.2rem;
+            font-weight: 900;
+            color: var(--gold);
+        }
+
+        .stat-label { color: var(--gray); font-size: 0.9rem; }
+
+        .section {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 5rem 2rem;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .section-header h2 {
+            font-size: 2.3rem;
+            font-weight: 900;
+            margin-bottom: 0.8rem;
+        }
+
+        .section-header p { color: var(--gray); font-size: 1.1rem; }
+
+        .steps-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 2rem;
+        }
+
+        .step-card {
+            background: var(--white);
+            border-radius: var(--radius);
+            padding: 2rem;
+            text-align: center;
+            border: 1px solid var(--border);
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .step-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--primary-light);
+        }
+
+        .step-number {
+            width: 50px;
+            height: 50px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            font-size: 1.3rem;
+            margin: 0 auto 1rem;
+        }
+
+        .step-card h3 { margin-bottom: 0.5rem; }
+        .step-card p { color: var(--gray); font-size: 0.9rem; }
+
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .testimonial-card {
+            background: var(--white);
+            border-radius: var(--radius);
+            padding: 2rem;
+            border: 1px solid var(--border);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .testimonial-card:hover {
+            box-shadow: var(--shadow-lg);
+            border-color: var(--gold-light);
+        }
+
+        .testimonial-card .quote-icon {
+            font-size: 3rem;
+            color: var(--gold-light);
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            opacity: 0.5;
+        }
+
+        .testimonial-card .stars { color: var(--gold); margin-bottom: 0.8rem; font-size: 1.1rem; }
+        .testimonial-card .text { color: var(--dark); font-style: italic; margin-bottom: 1rem; line-height: 1.6; }
+
+        .testimonial-card .author {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .author-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: var(--primary-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .author-name { font-weight: 700; font-size: 0.95rem; }
+        .author-detail { color: var(--gray); font-size: 0.8rem; }
+
+        .approved-badge {
+            display: inline-block;
+            background: var(--success-light);
+            color: var(--success);
+            padding: 0.2rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-top: 0.5rem;
+        }
+
+        .support-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+            gap: 2rem;
+        }
+
+        .support-card {
+            background: var(--white);
+            border-radius: var(--radius);
+            padding: 2rem;
+            text-align: center;
+            border: 1px solid var(--border);
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .support-card:hover {
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-5px);
+        }
+
+        .support-icon { font-size: 2.5rem; margin-bottom: 0.8rem; }
+        .support-card h3 { margin-bottom: 0.5rem; }
+        .support-card p { color: var(--gray); font-size: 0.9rem; }
+
+        .cta-section {
+            background: linear-gradient(135deg, var(--primary) 0%, #1e40af 100%);
+            color: white;
+            text-align: center;
+            padding: 4rem 2rem;
+        }
+
+        .cta-section h2 { font-size: 2rem; margin-bottom: 1rem; }
+        .cta-section .btn { margin-top: 1.5rem; }
+
+        .footer {
+            background: var(--dark);
+            color: white;
+            padding: 4rem 2rem 2rem;
+        }
+
+        .footer-grid {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-grid h4 { margin-bottom: 1rem; }
+        .footer-grid ul { list-style: none; }
+        .footer-grid ul li { margin-bottom: 0.5rem; }
+        .footer-grid ul li a { color: #94a3b8; text-decoration: none; font-size: 0.9rem; }
+        .footer-grid ul li a:hover { color: var(--gold); }
+
+        .footer-bottom {
+            max-width: 1200px;
+            margin: 0 auto;
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            color: #94a3b8;
+            font-size: 0.85rem;
+        }
+
+        @media (max-width: 768px) {
+            .hero {
+                grid-template-columns: 1fr;
+                padding: 2rem 1rem;
+                gap: 2rem;
+            }
+            .hero-content h1 { font-size: 2.2rem; }
+            .nav-links { display: none; }
+            .hamburger { display: flex; }
+            .section { padding: 3rem 1rem; }
+            .section-header h2 { font-size: 1.8rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="top-bar">
+        <div class="top-bar-inner">
+            <div class="top-bar-item"><span class="top-bar-dot"></span> Mikopo kuanzia TZS 100,000 hadi 50,000,000</div>
+            <div class="top-bar-item"><span class="top-bar-dot"></span> Riba kuanzia 5.99%</div>
+            <div class="top-bar-item"><span class="top-bar-dot"></span> Uidhinishaji wa dakika 15</div>
+            <div class="top-bar-item"><span class="top-bar-dot"></span> Hakuna gharama zilizofichwa</div>
+            <div class="top-bar-item"><span class="top-bar-dot"></span> Wateja 50,000+ wameridhika</div>
+        </div>
+    </div>
+
+    <header class="header">
+        <div class="header-inner">
+            <a href="#" class="logo">
+                <div class="logo-icon">MH</div>
+                <div class="logo-text">Mkopo<span>WaHaraka</span></div>
+            </a>
+            <ul class="nav-links">
+                <li><a href="#jinsi">Jinsi Inavyofanya</a></li>
+                <li><a href="#wateja">Wateja</a></li>
+                <li><a href="#msaada">Msaada</a></li>
+                <li><a href="#" class="btn-apply" onclick="goToApply()">Omba Sasa</a></li>
+            </ul>
+            <div class="hamburger" id="hamburger">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+    </header>
+
+    <div class="mobile-overlay" id="mobileOverlay"></div>
+    <div class="mobile-menu" id="mobileMenu">
+        <a href="#jinsi">Jinsi Inavyofanya</a>
+        <a href="#wateja">Wateja</a>
+        <a href="#msaada">Msaada</a>
+        <a href="#" onclick="goToApply()" style="color:var(--primary);font-weight:700;">Omba Sasa →</a>
+    </div>
+
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Pata <span class="highlight">Mkopo Wako</span> kwa Dakika 15</h1>
+            <p>Omba mtandaoni, pata uamuzi wa papo hapo, na upokee fedha leo hii. Hakuna makaratasi, hakuna gharama zilizofichwa.</p>
+            <div class="hero-features">
+                <div class="hero-feature"><span class="check">✓</span> Uamuzi wa Papo Hapo</div>
+                <div class="hero-feature"><span class="check">✓</span> Hakuna Dhamana</div>
+                <div class="hero-feature"><span class="check">✓</span> Malipo Rafiki</div>
+            </div>
+            <div class="btn-group">
+                <a href="#" class="btn btn-gold" onclick="goToApply()">Angalia Kiwango Chako</a>
+                <a href="#jinsi" class="btn btn-primary">Jifunze Zaidi</a>
+            </div>
+        </div>
+        <div class="hero-calc">
+            <h3>💰 Kikokotoo cha Haraka</h3>
+            <div class="slider-group">
+                <label>Kiasi cha Mkopo <span id="calcAmountLabel">TZS 500,000</span></label>
+                <input type="range" id="calcAmount" min="100000" max="50000000" step="100000" value="500000">
+            </div>
+            <div class="slider-group">
+                <label>Muda wa Mkopo <span id="calcTermLabel">Mwaka 1</span></label>
+                <input type="range" id="calcTerm" min="1" max="5" step="1" value="1">
+            </div>
+            <div class="calc-result">
+                <div class="label">Makadirio ya Malipo ya Kila Mwezi</div>
+                <div class="monthly" id="calcResult">TZS 45,000</div>
+            </div>
+            <button class="btn btn-gold" style="width:100%;margin-top:1rem;" onclick="goToApply()">
+                Omba Sasa →
+            </button>
+        </div>
+    </section>
+
+    <div class="stats-bar">
+        <div class="stats-inner">
+            <div class="stat-item">
+                <div class="stat-number counter" data-target="50000">0</div>
+                <div class="stat-label">Mikopo Iliyoidhinishwa</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" style="color:var(--gold);">★★★★★</div>
+                <div class="stat-label">Wastani wa 4.9/5</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number counter" data-target="250">0</div>
+                <div class="stat-label">Milioni Zilizotolewa</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number counter" data-target="15">0</div>
+                <div class="stat-label">Dakika Kuidhinishwa</div>
+            </div>
+        </div>
+    </div>
+
+    <section class="section" id="jinsi">
+        <div class="section-header">
+            <h2>Jinsi Inavyofanya Kazi</h2>
+            <p>Kupata mkopo hakijawahi kuwa rahisi kama hivi</p>
+        </div>
+        <div class="steps-grid">
+            <div class="step-card">
+                <div class="step-number">1</div>
+                <h3>Omba Mtandaoni</h3>
+                <p>Jaza fomu yetu fupi ya dakika 5</p>
+            </div>
+            <div class="step-card">
+                <div class="step-number">2</div>
+                <h3>Pata Uidhinishaji</h3>
+                <p>Pokea uamuzi wa papo hapo</p>
+            </div>
+            <div class="step-card">
+                <div class="step-number">3</div>
+                <h3>Pitia na Saini</h3>
+                <p>Pitia masharti na saini mtandaoni</p>
+            </div>
+            <div class="step-card">
+                <div class="step-number">4</div>
+                <h3>Pokea Fedha</h3>
+                <p>Fedha zinaingia akaunti yako leo hii</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" id="wateja" style="background:var(--gray-light);">
+        <div class="section-header">
+            <h2>Wateja Wenye Furaha</h2>
+            <p>Jiunge na maelfu ya wateja walioridhika</p>
+        </div>
+        <div class="testimonials-grid">
+            <div class="testimonial-card">
+                <div class="quote-icon">"</div>
+                <div class="stars">★★★★★</div>
+                <p class="text">"Niliomba saa 8 mchana na nikapata TZS 2,000,000 ifikapo saa 11 jioni. Mchakato ulikuwa mzuri sana."</p>
+                <div class="author">
+                    <div class="author-avatar">AM</div>
+                    <div>
+                        <div class="author-name">Amina M.</div>
+                        <div class="author-detail">Mkopo wa TZS 2,000,000</div>
+                    </div>
+                </div>
+                <span class="approved-badge">✓ Imeidhinishwa</span>
+            </div>
+            <div class="testimonial-card">
+                <div class="quote-icon">"</div>
+                <div class="stars">★★★★★</div>
+                <p class="text">"Nilikuwa na wasiwasi kuhusu mkopo mtandaoni lakini Mkopo Wa Haraka ilinisaidia sana. Kila kitu kilikuwa wazi."</p>
+                <div class="author">
+                    <div class="author-avatar">JM</div>
+                    <div>
+                        <div class="author-name">Juma M.</div>
+                        <div class="author-detail">Mkopo wa TZS 5,000,000</div>
+                    </div>
+                </div>
+                <span class="approved-badge">✓ Imeidhinishwa</span>
+            </div>
+            <div class="testimonial-card">
+                <div class="quote-icon">"</div>
+                <div class="stars">★★★★★</div>
+                <p class="text">"Timu ya msaada ilikuwa nzuri sana. Walinisaidia kila hatua na nikapata riba nzuri zaidi."</p>
+                <div class="author">
+                    <div class="author-avatar">FK</div>
+                    <div>
+                        <div class="author-name">Fatma K.</div>
+                        <div class="author-detail">Mkopo wa TZS 8,000,000</div>
+                    </div>
+                </div>
+                <span class="approved-badge">✓ Imeidhinishwa</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" id="msaada">
+        <div class="section-header">
+            <h2>Msaada</h2>
+            <p>Tuko tayari kukusaidia wakati wowote</p>
+        </div>
+        <div class="support-grid">
+            <div class="support-card">
+                <div class="support-icon">💬</div>
+                <h3>Chat ya Moja kwa Moja</h3>
+                <p>Ongea nasi moja kwa moja</p>
+            </div>
+            <div class="support-card">
+                <div class="support-icon">📞</div>
+                <h3>Msaada kwa Simu</h3>
+                <p>Piga simu 24/7</p>
+            </div>
+            <div class="support-card">
+                <div class="support-icon">📧</div>
+                <h3>Barua Pepe</h3>
+                <p>Tutumie barua pepe</p>
+            </div>
+            <div class="support-card">
+                <div class="support-icon">📚</div>
+                <h3>Maswali ya Kawaida</h3>
+                <p>Angalia maswali na majibu</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="cta-section">
+        <h2>Tayari Kupata Mkopo Wako?</h2>
+        <p>Jiunge na maelfu ya Watanzania wanaotumia Mkopo Wa Haraka</p>
+        <a href="#" class="btn btn-gold" onclick="goToApply()">Omba Mkopo Sasa →</a>
+    </section>
+
+    <footer class="footer">
+        <div class="footer-grid">
+            <div>
+                <h4>🏦 Mkopo Wa Haraka</h4>
+                <p style="color:#94a3b8;font-size:0.9rem;">Mikopo ya haraka na ya kuaminika kwa Watanzania wote.</p>
+            </div>
+            <div>
+                <h4>Mikopo</h4>
+                <ul>
+                    <li><a href="#">Mkopo Binafsi</a></li>
+                    <li><a href="#">Mkopo wa Biashara</a></li>
+                    <li><a href="#">Mkopo wa Kilimo</a></li>
+                    <li><a href="#">Mkopo wa Elimu</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4>Kampuni</h4>
+                <ul>
+                    <li><a href="#">Kuhusu Sisi</a></li>
+                    <li><a href="#">Ajira</a></li>
+                    <li><a href="#">Blogu</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4>Sheria</h4>
+                <ul>
+                    <li><a href="#">Sera ya Faragha</a></li>
+                    <li><a href="#">Masharti na Vigezo</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 Mkopo Wa Haraka. Tovuti ya maonyesho. Haki zote zimehifadhiwa.</p>
+        </div>
+    </footer>
+
+    <script>
+        const hamburger = document.getElementById('hamburger');
+        const mobileMenu = document.getElementById('mobileMenu');
+        const mobileOverlay = document.getElementById('mobileOverlay');
+
+        hamburger.addEventListener('click', () => {
+            mobileMenu.classList.toggle('active');
+            mobileOverlay.classList.toggle('active');
+        });
+
+        mobileOverlay.addEventListener('click', () => {
+            mobileMenu.classList.remove('active');
+            mobileOverlay.classList.remove('active');
+        });
+
+        document.querySelectorAll('.mobile-menu a').forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.remove('active');
+                mobileOverlay.classList.remove('active');
+            });
+        });
+
+        const calcAmount = document.getElementById('calcAmount');
+        const calcTerm = document.getElementById('calcTerm');
+        
+        function updateCalc() {
+            const amount = parseInt(calcAmount.value);
+            const years = parseInt(calcTerm.value);
+            const rate = 0.065;
+            const monthlyRate = rate / 12;
+            const months = years * 12;
+            const monthly = amount * monthlyRate * Math.pow(1 + monthlyRate, months) / (Math.pow(1 + monthlyRate, months) - 1);
+
+            document.getElementById('calcAmountLabel').textContent = 'TZS ' + amount.toLocaleString();
+            document.getElementById('calcTermLabel').textContent = years === 1 ? 'Mwaka 1' : 'Miaka ' + years;
+            document.getElementById('calcResult').textContent = 'TZS ' + Math.round(monthly).toLocaleString() + '/mwezi';
+        }
+
+        calcAmount.addEventListener('input', updateCalc);
+        calcTerm.addEventListener('input', updateCalc);
+        updateCalc();
+
+        function goToApply() {
+            const amount = calcAmount.value;
+            const term = calcTerm.value;
+            localStorage.setItem('quickcash_loan_amount', amount);
+            localStorage.setItem('quickcash_loan_term', term);
+            window.location.href = 'apply.html?amount=' + amount + '&term=' + term;
+        }
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const counter = entry.target;
+                    const target = parseInt(counter.getAttribute('data-target'));
+                    const duration = 2000;
+                    const startTime = performance.now();
+
+                    function update(currentTime) {
+                        const elapsed = currentTime - startTime;
+                        const progress = Math.min(elapsed / duration, 1);
+                        const eased = 1 - Math.pow(1 - progress, 4);
+                        counter.textContent = Math.floor(target * eased).toLocaleString() + '+';
+                        if (progress < 1) requestAnimationFrame(update);
+                        else counter.textContent = target.toLocaleString() + '+';
+                    }
+                    requestAnimationFrame(update);
+                    observer.unobserve(counter);
+                }
+            });
+        }, { threshold: 0.5 });
+
+        document.querySelectorAll('.counter').forEach(c => observer.observe(c));
+
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                const href = this.getAttribute('href');
+                if (href === '#') return;
+                e.preventDefault();
+                const target = document.querySelector(href);
+                if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+        });
+
+        console.log('🏦 Mkopo Wa Haraka - Ukurasa wa Kwanza');
+    </script>
+</body>
+</html>

